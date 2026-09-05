@@ -1,0 +1,56 @@
+.selectGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 210px;
+}
+
+.selectLabel {
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.selectWrapper {
+  position: relative;
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  padding: 11px 42px 11px 14px;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  outline: none;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.select:hover:not(:disabled) {
+  border-color: #64748b;
+  background: #f8fafc;
+}
+.select:focus-visible {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+}
+.select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.selectArrow {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: #6366f1;
+  font-size: 0.7rem;
+  pointer-events: none;
+}
+
+/*# sourceMappingURL=Select.module.css.map */

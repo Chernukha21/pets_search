@@ -1,0 +1,73 @@
+$btn-bg: #4f46e5;          // Индиго (основной цвет)
+$btn-bg-hover: #4338ca;    // Темнее при наведении
+$btn-bg-active: #3730a3;   // Еще темнее при клике
+$btn-text: #ffffff;
+$btn-radius: 8px;          // Скругление углов
+$transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  width: 150px; // На всю ширину контейнера (удобно для форм)
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: $btn-radius;
+
+  background-color: $btn-bg;
+  color: $btn-text;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba($btn-bg, 0.2), 0 2px 4px -1px rgba($btn-bg, 0.1);
+  transition: $transition;
+  user-select: none;
+
+
+  &:hover:not(:disabled) {
+    background-color: $btn-bg-hover;
+    box-shadow: 0 10px 15px -3px rgba($btn-bg, 0.3), 0 4px 6px -2px rgba($btn-bg, 0.05);
+    transform: translateY(-1px);
+  }
+
+
+  &:active:not(:disabled) {
+    background-color: $btn-bg-active;
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+
+  &:focus-visible {
+    outline: 3px solid rgba($btn-bg, 0.4);
+    outline-offset: 2px;
+  }
+
+
+  &:disabled {
+    background-color: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+
+  .spinner {
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid rgba(#94a3b8, 0.3);
+    border-top-color: #94a3b8;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+}
