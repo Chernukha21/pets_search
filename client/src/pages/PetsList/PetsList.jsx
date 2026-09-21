@@ -6,14 +6,8 @@ import {
   useUpdatePetMutation,
 } from '../../store/petApi.js';
 import classes from './PetsList.module.scss';
-import Button from '../../componetns/Button/Button.jsx';
-import Select from '../../componetns/Select/Select.jsx';
-
-const FOUND_OPTIONS = [
-  { value: '', label: 'All pets' },
-  { value: 'true', label: 'Found' },
-  { value: 'false', label: 'Still missing' },
-];
+import PetCard from '../../componetns/PetCard/PetCard.jsx';
+import PetFilters from '../../componetns/PetFilters/PetFilters.jsx';
 
 const PetsList = () => {
   const [selectedTypes, setSelectedTypes] = useState([]);
@@ -26,27 +20,13 @@ const PetsList = () => {
     useGetPetTypesQuery();
   const [deletePet, { isLoading: isDeleting }] = useDeletePetMutation();
   const [updatePet, { isLoading: isUpdating }] = useUpdatePetMutation();
-  const petsWithIds = pets.map((pet) => ({
+  const petsWithTypes = pets.map((pet) => ({
     ...pet,
     type:
       petTypes.find((petType) => petType.id === pet.petTypeId)?.type ??
       'Unknown',
   }));
 
-  const handleTypeChange = (event) => {
-    const { value, checked } = event.target;
-
-    setSelectedTypes((previousTypes) =>
-      checked
-        ? [...previousTypes, value]
-        : previousTypes.filter((id) => id !== value)
-    );
-  };
-
-  const handleResetFilter = () => {
-    setSelectedTypes([]);
-    setFoundFilter('');
-  };
   const handleDelete = async (id) => {
     const confirmed = window.confirm('Are you sure you want to delete?');
 
@@ -57,10 +37,10 @@ const PetsList = () => {
     try {
       await deletePet(id).unwrap();
     } catch (error) {
-      console.error('Failed to delete pet:', error);
       window.alert(error.data?.message ?? 'Failed to delete pet');
     }
   };
+
   const handleEdit = async (pet) => {
     try {
       await updatePet({
@@ -68,12 +48,8 @@ const PetsList = () => {
         isFound: !pet.isFound,
       }).unwrap();
     } catch (error) {
-      console.error('Failed to update pet:', error);
       window.alert(error.data?.message ?? 'Failed to update pet');
     }
-  };
-  const handleFoundFilter = (value) => {
-    setFoundFilter(value);
   };
 
   if (isLoadingPets || isLoadingPetTypes) {
@@ -82,96 +58,30 @@ const PetsList = () => {
 
   return (
     <>
-      <div className={classes.actions}>
-        <span className={classes.label}>Choose a type of pet</span>
-        <button
-          className={classes.submitBtn}
-          onClick={handleResetFilter}
-          disabled={!selectedTypes.length && !foundFilter}
-        >
-          Show All Pets
-        </button>
-        {petTypes.map((petType) => {
-          const inputId = `pet-type-${petType.id}`;
-          const value = String(petType.id);
-
-          return (
-            <div className={classes['checkbox-group']} key={petType.id}>
-              <input
-                type="checkbox"
-                id={inputId}
-                name="petTypeIds"
-                value={value}
-                checked={selectedTypes.includes(value)}
-                onChange={handleTypeChange}
-              />
-
-              <label htmlFor={inputId}>{petType.type}</label>
-            </div>
-          );
-        })}
-        <Select
-          id="found-filter"
-          label="Filter by status"
-          value={foundFilter}
-          options={FOUND_OPTIONS}
-          onChange={handleFoundFilter}
-          disabled={isLoadingPets}
-        />
-      </div>
+      <PetFilters
+        petTypes={petTypes}
+        selectedTypes={selectedTypes}
+        foundFilter={foundFilter}
+        setSelectedTypes={setSelectedTypes}
+        setFoundFilter={setFoundFilter}
+        isLoading={isLoadingPets}
+      />
       <div className={classes.petsList}>
-        {petsWithIds.length === 0 && <p>No pets match the selected filters</p>}
-        {petsWithIds.map((pet) => {
+        {petsWithTypes.length === 0 && (
+          <p>No pets match the selected filters</p>
+        )}
+        {petsWithTypes.map((pet) => {
           const isFound = pet.isFound ?? pet.is_found;
           return (
-            <article key={pet.id} className={classes.petCard}>
-              <h3 className={classes.petName}>{pet.name}</h3>
-
-              <div className={classes.petInfo}>
-                <p className={classes.infoRow}>
-                  <span className={classes.label}>Owner</span>
-
-                  <span className={classes.value}>{pet.owner}</span>
-                </p>
-
-                <p className={classes.infoRow}>
-                  <span className={classes.label}>Lost date</span>
-
-                  <span className={classes.value}>{pet.lostDate}</span>
-                </p>
-
-                <p className={classes.infoRow}>
-                  <span className={classes.label}>Contacts</span>
-                  {pet.ownerContacts}
-                </p>
-                <p className={classes.infoRow}>
-                  <span className={classes.label}>Type</span>
-                  {pet.type}
-                </p>
-                <p className={classes.infoRow}>
-                  <span className={classes.label}>Status</span>
-                  <input
-                    type="checkbox"
-                    checked={isFound}
-                    onChange={() => handleEdit(pet)}
-                    disabled={isUpdating}
-                  />
-                  <span
-                    className={`${classes.status} ${
-                      isFound ? classes.found : classes.lost
-                    }`}
-                  >
-                    {isFound ? 'Found' : 'Still missing'}
-                  </span>
-                </p>
-                <Button
-                  type="button"
-                  onClick={() => handleDelete(pet.id)}
-                  disabled={isDeleting}
-                  value={isDeleting ? 'Deleting' : 'Delete Pet'}
-                />
-              </div>
-            </article>
+            <PetCard
+              pet={pet}
+              key={pet.id}
+              isFound={Boolean(isFound)}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+              isUpdating={isUpdating}
+              isDeleting={isDeleting}
+            />
           );
         })}
       </div>

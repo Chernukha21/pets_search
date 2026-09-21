@@ -1,7 +1,11 @@
 import classes from './Button.module.scss';
 
-const Button = ({ value }) => {
-  return <button className={classes.button}>{value}</button>;
+const Button = ({ value, ...props }) => {
+  return (
+    <button className={classes.button} {...props}>
+      {value}
+    </button>
+  );
 };
 
 export default Button;
