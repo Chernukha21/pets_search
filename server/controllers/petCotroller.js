@@ -49,9 +49,13 @@ export const getPets = async (req, res, next) => {
 };
 
 export const getPetById = async (req, res, next) => {
-  const { id } = req.params;
-
   try {
+    const id = Number(req.params.id);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      return next(createHttpError(400, 'Invalid pet ID'));
+    }
+
     const foundPet = await Pet.findByPk(id);
 
     if (!foundPet) {
@@ -93,9 +97,13 @@ export const updatePetById = async (req, res, next) => {
 };
 
 export const deletePetById = async (req, res, next) => {
-  const { id } = req.params;
-
   try {
+    const id = Number(req.params.id);
+
+    if (!Number.isSafeInteger(id) || id <= 0) {
+      return next(createHttpError(400, 'Invalid pet ID'));
+    }
+
     const deletedCount = await Pet.destroy({
       where: { id },
     });
